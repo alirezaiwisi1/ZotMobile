@@ -1,51 +1,51 @@
 # Troubleshooting
 
-## Setup
+Everything below is also surfaced in-app with **Fix / Retry** buttons wherever possible.
 
-**"Termux is not installed"**
-Install Termux from F-Droid: https://f-droid.org/en/packages/com.termux/ — the Play Store version is unmaintained and will not receive RUN_COMMAND support correctly. Reopen Zot Mobile afterwards.
+## "Termux could not be started"
 
-**Environment check hangs or returns nothing**
-Open the Termux app once manually (first launch finishes its bootstrap), then return to Zot Mobile and re-run the check.
+- Termux or Termux:API missing → install both from **F-Droid** (same source!), then rerun the
+  environment check (Settings → Environment → Re-run checks).
+- Permission dialog denied → Settings (Android) → Apps → Termux → Permissions, or just trigger a
+  command again and choose **Allow** on the *"Run commands in Termux environment"* prompt.
 
-**"RUN_COMMAND permission not granted"**
-Android Settings → Apps → Zot Mobile → Permissions → Additional permissions → allow *Run commands in Termux environment*.
+## "Git was not found in the Termux environment"
 
-**"Git was not found in the Termux environment"**
-Open Termux and run `pkg update && pkg install git`, then re-run the environment check. Same pattern for `nodejs`, `python`, `golang`.
+Open Termux and run `pkg install git`, then rerun the environment check.
 
-## Git / GitHub
+## Clone fails
 
-**Clone fails with 403 / Authentication failed**
-Your token is missing, expired, or lacks access to that repo. Create a fine-grained PAT (Contents: Read & write) and update Settings → GitHub.
+- *"GitHub rejected the credentials"* → add/refresh the token (Settings → GitHub). Private repos
+  need a token with Contents access.
+- *"No internet connection"* → cloning needs the network; editing works offline.
 
-**Push rejected (non-fast-forward)**
-Someone pushed to the remote. Use the ⬇ (pull) button first, then push again.
+## Push fails with "GitHub rejected the credentials"
 
-**"This project is not a Git repository yet"**
-Create the project through the Files tab (New project runs `git init`), or clone a repository instead of pointing at an arbitrary folder.
+Set your git identity (Settings → Git identity) and confirm the token has **Contents: read/write**.
 
-## AI
+## "AI requires an internet connection…"
 
-**"AI requires an internet connection"**
-Only the AI chat needs network; files, terminal, git, and projects work offline. Reconnect and resend.
+Expected offline behavior. File browsing, editing, local git and the terminal keep working.
 
-**"API key rejected (401)"**
-Check the key in Settings → AI Provider; make sure it belongs to the selected provider.
+## Agent says "No API key set for …"
 
-**"Rate limit (429)"**
-Wait a moment, or switch provider/model in Settings.
+Add the key in Settings → AI provider for the *selected* provider (the one marked ●).
 
-**Agent proposes no patches**
-The agent only emits diffs for code changes. Ask it explicitly, e.g. "modify src/App.tsx so that … and give me a PATCH block".
+## Command hangs as "running"
 
-## Commands
+Termux processes don't report completion if killed externally. Use the **Stop** button; the
+runner also times out. If Termux itself was force-closed, reopen it once.
 
-**`npm: command not found`** → Termux: `pkg install nodejs`
-**`python: command not found`** → Termux: `pkg install python`
-**Command times out** → long builds (Gradle on-device) can exceed the 5-minute runner cap; run them in stages.
+## The agent proposes an edit but nothing changes on disk
 
-## App
+Nothing is written until you tap **Approve**. Rejected proposals are kept in the conversation
+("USER REJECTED …") so the agent adjusts.
 
-**Theme doesn't follow system** → Settings → Appearance → System.
-**Keyboard covers the chat input** → the app resizes with the keyboard (`adjustResize`); if your device uses gesture nav, toggle fullscreen keyboard settings in Android.
+## Output looks garbled for long-running commands
+
+The output file is tailed every 250 ms; very fast output is batched. Final output is complete
+once the exit code line appears.
+
+## Reset everything
+
+Android Settings → Apps → ZotMobile → Clear data (removes projects, keys, settings).
